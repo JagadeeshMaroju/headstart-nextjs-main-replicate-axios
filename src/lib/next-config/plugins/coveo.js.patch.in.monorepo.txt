@@ -1,0 +1,21 @@
+const withCoveoPatch = require('next-transpile-modules')(['@coveo/atomic-react'], {
+  resolveSymlinks: false,
+});
+
+const coveoPlugin = (nextConfig = {}) => {
+  return withCoveoPatch(
+    Object.assign({}, nextConfig, {
+      webpack: (config, options) => {        
+
+        // Overload the Webpack config if it was already overloaded
+        if (typeof nextConfig.webpack === 'function') {
+          return nextConfig.webpack(config, options);
+        }
+
+        return config;
+      },
+    })
+  );
+};
+
+module.exports = coveoPlugin;

@@ -1,0 +1,30 @@
+import Cybersource from './cybersource/cybersourceclient';
+import { BillTo } from './cybersource/cybersourcemodel';
+
+export async function zeroDollarAuthorizationAsync(
+  transientToken: string,
+  currency: string,
+  billToAddress: BillTo
+): Promise<string | Error> {
+  if (transientToken) {
+    try {
+      const client = new Cybersource();
+
+      return await client.zeroDollarAuthorizationAsync(transientToken, soapRequest);
+    } catch (error) {
+      console.log('error:', error);
+    }
+  }
+}
+
+export default async function generateCybersourceKey(): Promise<string | Error> {
+  try {
+    const client = new Cybersource();
+    const key = await client.generateKey();
+
+    return key;
+  } catch (error) {
+    console.log('error:', error);
+    return 'error';
+  }
+}

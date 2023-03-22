@@ -1,0 +1,70 @@
+import Cybersource from './cybersource/cybersourceclient';
+import { BillTo, SOAPRequest } from './cybersource/cybersourcemodel';
+import loadConfigs from './cybersource/load_configs';
+
+export async function zeroDollarAuthorizationAsync(
+  transientToken: string,
+  currency: string,
+  billToAddress: BillTo
+): Promise<string | Error> {
+  if (transientToken) {
+    try {
+      const client = new Cybersource();
+
+      const soapRequest: SOAPRequest = {
+        merchantID: '',
+        merchantReferenceCode: '',
+        billTo: {
+          firstName: '',
+          lastName: '',
+          street1: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          country: '',
+          phoneNumber: '',
+          email: '',
+        },
+        purchaseTotals: {
+          currency: currency,
+        },
+        recurringSubscriptionInfo: {
+          frequency: 'on-demand',
+        },
+        tokenSource: {
+          transientToken: '',
+        },
+        ccAuthService: {
+          attributes: {
+            run: 'false',
+          },
+        },
+        paySubscriptionCreateService: {
+          attributes: {
+            run: 'true',
+          },
+        },
+      };
+
+      if (billToAddress) {
+        soapRequest.billTo = billToAddress;
+      }
+
+      return await client.zeroDollarAuthorizationAsync(transientToken, soapRequest);
+    } catch (error) {
+      console.log('error:', error);
+    }
+  }
+}
+
+export default async function generateCybersourceKey(): Promise<string | Error> {
+  try {
+    const client = new Cybersource();
+    const key = await client.generateKey();
+
+    return key;
+  } catch (error) {
+    console.log('error:', error);
+    return 'error';
+  }
+}
